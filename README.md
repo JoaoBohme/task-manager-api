@@ -36,7 +36,7 @@ TaskManager/
 
 ## Status atual
 
-Etapas 1, 2, 3 e 4 concluidas:
+Etapas 1, 2, 3, 4 e 5 concluidas:
 
 - solution criada
 - projetos separados por camada
@@ -51,6 +51,8 @@ Etapas 1, 2, 3 e 4 concluidas:
 - servicos de usuarios e tarefas implementados
 - validacoes com FluentValidation adicionadas
 - regra de hash de senha e tratamento de conflitos/not found preparados
+- controllers base de usuarios e tarefas implementados
+- API pronta para expor o CRUD principal
 
 ## Como executar
 
@@ -62,6 +64,6 @@ dotnet run --project TaskManager.API
 
 ## Proximas etapas
 
-- implementacao dos endpoints obrigatorios
+- filtros, paginacao e resumo de tarefas
 - middleware global de erros, Swagger e testes
 - migrations e ajuste final da execucao local
