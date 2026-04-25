@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TaskManager.Application.Common.Models;
 using TaskManager.Application.DTOs.Tasks;
 using TaskManager.Application.Interfaces.Services;
 
@@ -16,7 +17,7 @@ public class TasksController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedResult<TaskResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAll(
         [FromQuery] TaskListQueryDto query,
@@ -33,6 +34,15 @@ public class TasksController : ControllerBase
     {
         var task = await _taskService.GetByIdAsync(id, cancellationToken);
         return Ok(task);
+    }
+
+    [HttpGet("summary/{userId:guid}")]
+    [ProducesResponseType(typeof(TaskSummaryResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetSummaryByUserId(Guid userId, CancellationToken cancellationToken)
+    {
+        var summary = await _taskService.GetSummaryByUserIdAsync(userId, cancellationToken);
+        return Ok(summary);
     }
 
     [HttpPost]
