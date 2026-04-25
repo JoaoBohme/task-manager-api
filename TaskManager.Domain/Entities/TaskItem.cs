@@ -33,7 +33,9 @@ public class TaskItem
         Status = DomainTaskStatus.Pending;
         Priority = priority;
         DateCreated = DateTime.UtcNow;
-        UserId = userId;
+        UserId = userId == Guid.Empty
+            ? throw new ArgumentException("UserId cannot be empty.", nameof(userId))
+            : userId;
     }
 
     public void UpdateDetails(string title, string description, TaskPriority priority)
