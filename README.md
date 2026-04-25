@@ -36,7 +36,7 @@ TaskManager/
 
 ## Status atual
 
-Etapas 1, 2 e 3 concluidas:
+Etapas 1, 2, 3 e 4 concluidas:
 
 - solution criada
 - projetos separados por camada
@@ -48,6 +48,9 @@ Etapas 1, 2 e 3 concluidas:
 - DbContext, configuracoes EF Core e repositorios implementados
 - infraestrutura registrada via Dependency Injection
 - base pronta para migrations e camada de servicos
+- servicos de usuarios e tarefas implementados
+- validacoes com FluentValidation adicionadas
+- regra de hash de senha e tratamento de conflitos/not found preparados
 
 ## Como executar
 
@@ -60,5 +63,5 @@ dotnet run --project TaskManager.API
 ## Proximas etapas
 
 - implementacao dos endpoints obrigatorios
-- validacoes, servicos e regras de negocio
 - middleware global de erros, Swagger e testes
+- migrations e ajuste final da execucao local
