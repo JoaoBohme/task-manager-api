@@ -36,7 +36,7 @@ TaskManager/
 
 ## Status atual
 
-Etapas 1, 2, 3, 4, 5 e 6 concluidas:
+Etapas 1, 2, 3, 4, 5, 6 e 7 concluidas:
 
 - solution criada
 - projetos separados por camada
@@ -55,6 +55,8 @@ Etapas 1, 2, 3, 4, 5 e 6 concluidas:
 - API pronta para expor o CRUD principal
 - listagem de tarefas com filtros e paginacao exposta via API
 - endpoint de resumo por status do usuario adicionado
+- middleware global de erros com resposta padronizada implementado
+- Swagger/OpenAPI configurado com exemplos basicos para os DTOs principais
 
 ## Como executar
 
@@ -64,8 +66,14 @@ dotnet build
 dotnet run --project TaskManager.API
 ```
 
+Swagger:
+
+```text
+http://localhost:5064/swagger
+```
+
 ## Proximas etapas
 
-- middleware global de erros, Swagger e testes
 - migrations e ajuste final da execucao local
+- testes unitarios da camada de servicos
 - autenticacao e demais diferenciais
