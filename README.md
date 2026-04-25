@@ -36,12 +36,15 @@ TaskManager/
 
 ## Status atual
 
-Etapa 1 concluida:
+Etapas 1 e 2 concluidas:
 
 - solution criada
 - projetos separados por camada
 - referencias entre projetos configuradas
 - bootstrap inicial da API preparado para evolucao
+- entidades e enums do dominio modelados
+- contratos base da camada Application definidos
+- DTOs iniciais, filtros e modelos de paginacao adicionados
 
 ## Como executar
 
@@ -53,7 +56,6 @@ dotnet run --project TaskManager.API
 
 ## Proximas etapas
 
-- modelagem do dominio
-- contratos da camada Application
 - configuracao de persistencia com EF Core
 - implementacao dos endpoints obrigatorios
+- validacoes, servicos e regras de negocio
