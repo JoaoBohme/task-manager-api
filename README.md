@@ -36,7 +36,7 @@ TaskManager/
 
 ## Status atual
 
-Etapas 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 e 11 concluidas:
+Etapas 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 e 12 concluidas:
 
 - solution criada
 - projetos separados por camada
@@ -63,6 +63,7 @@ Etapas 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 e 11 concluidas:
 - Docker Compose configurado para API, banco SQL Server e migration
 - seed automatico e idempotente de usuario admin para facilitar avaliacao
 - logs estruturados com Serilog configurados para a API
+- cache em memoria nas listagens de tarefas e usuarios com invalidacao em escrita
 
 ## Como executar
 
@@ -109,6 +110,5 @@ senha: Admin@TaskManager2026
 
 ## Proximas etapas
 
-- cache em memoria na listagem de tarefas
 - refinamentos finais de banco e empacotamento
 - README final de entrega

@@ -1,3 +1,7 @@
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using TaskManager.Application.Common.Caching;
 using TaskManager.Application.Common.Exceptions;
 using TaskManager.Application.DTOs.Tasks;
 using TaskManager.Application.Services;
@@ -116,6 +120,10 @@ public class TaskServiceTests
         return new TaskService(
             taskRepository,
             userRepository,
+            new MemoryCache(new MemoryCacheOptions()),
+            NullLogger<TaskService>.Instance,
+            new TaskListCacheState(),
+            Options.Create(new TaskListCacheOptions()),
             new CreateTaskDtoValidator(),
             new UpdateTaskDtoValidator(),
             new TaskListQueryDtoValidator());

@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using TaskManager.API.Middleware;
 using TaskManager.API.Swagger;
+using TaskManager.Application.Common.Caching;
 using TaskManager.Application;
 using TaskManager.Infrastructure;
 using TaskManager.Infrastructure.Seeding;
@@ -22,8 +23,13 @@ builder.Host.UseSerilog((context, services, configuration) =>
         .Enrich.FromLogContext();
 });
 
+builder.Services.Configure<TaskListCacheOptions>(
+    builder.Configuration.GetSection(TaskListCacheOptions.SectionName));
+builder.Services.Configure<UserListCacheOptions>(
+    builder.Configuration.GetSection(UserListCacheOptions.SectionName));
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddMemoryCache();
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

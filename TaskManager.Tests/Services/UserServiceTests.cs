@@ -1,3 +1,7 @@
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using TaskManager.Application.Common.Caching;
 using TaskManager.Application.Common.Exceptions;
 using TaskManager.Application.DTOs.Users;
 using TaskManager.Application.Services;
@@ -61,6 +65,10 @@ public class UserServiceTests
         return new UserService(
             userRepository,
             passwordHasher,
+            new MemoryCache(new MemoryCacheOptions()),
+            NullLogger<UserService>.Instance,
+            new UserListCacheState(),
+            Options.Create(new UserListCacheOptions()),
             new CreateUserDtoValidator(),
             new UpdateUserDtoValidator());
     }

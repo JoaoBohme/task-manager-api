@@ -34,6 +34,8 @@ services:
       AdminSeed__Name: "Admin User"
       AdminSeed__Email: "admin@taskmanager.com"
       AdminSeed__Password: "Admin@TaskManager2026"
+      TaskListCache__AbsoluteExpirationMinutes: "2"
+      UserListCache__AbsoluteExpirationMinutes: "2"
     depends_on:
       sqlserver:
         condition: service_healthy
@@ -61,6 +63,8 @@ services:
       AdminSeed__Email: "admin@taskmanager.com"
       AdminSeed__Password: "Admin@TaskManager2026"
       Serilog__MinimumLevel__Default: "Information"
+      TaskListCache__AbsoluteExpirationMinutes: "2"
+      UserListCache__AbsoluteExpirationMinutes: "2"
     ports:
       - "8080:8080"
     depends_on:
