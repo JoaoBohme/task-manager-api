@@ -36,7 +36,7 @@ TaskManager/
 
 ## Status atual
 
-Etapas 1, 2, 3, 4, 5, 6, 7, 8 e 9 concluidas:
+Etapas 1, 2, 3, 4, 5, 6, 7, 8, 9 e 10 concluidas:
 
 - solution criada
 - projetos separados por camada
@@ -60,13 +60,25 @@ Etapas 1, 2, 3, 4, 5, 6, 7, 8 e 9 concluidas:
 - testes unitarios adicionados para a camada de servicos
 - autenticacao JWT e endpoint de login implementados
 - todos os endpoints da API protegidos com JWT, exceto o login
+- Docker Compose configurado para API, banco SQL Server e migration
+- seed automatico e idempotente de usuario admin para facilitar avaliacao
 
 ## Como executar
+
+Ambiente local:
 
 ```bash
 dotnet restore
 dotnet build
+dotnet tool restore
+dotnet ef database update --project TaskManager.Infrastructure --startup-project TaskManager.API
 dotnet run --project TaskManager.API
+```
+
+Com Docker Compose:
+
+```bash
+docker compose up --build
 ```
 
 Swagger:
@@ -75,14 +87,28 @@ Swagger:
 http://localhost:5064/swagger
 ```
 
+Com Docker:
+
+```text
+http://localhost:8080/swagger
+```
+
 Login:
 
 ```text
 POST /api/auth/login
 ```
 
+Usuario admin de seed:
+
+```text
+email: admin@taskmanager.com
+senha: Admin@TaskManager2026
+```
+
 ## Proximas etapas
 
-- migrations e ajuste final da execucao local
-- refinamentos de banco, logs e empacotamento
-- README final, Docker Compose, Serilog e cache
+- logs estruturados com Serilog
+- cache em memoria na listagem de tarefas
+- refinamentos finais de banco e empacotamento
+- README final de entrega

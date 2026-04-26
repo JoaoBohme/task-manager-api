@@ -1,0 +1,69 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: taskmanager.sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "TaskManager@123"
+    ports:
+      - "1433:1433"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $$MSSQL_SA_PASSWORD -C -Q \"SELECT 1\" || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  migrator:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    container_name: taskmanager.migrator
+    working_dir: /src
+    volumes:
+      - ./:/src
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=TaskManagerDb;User Id=sa;Password=TaskManager@123;TrustServerCertificate=True;Encrypt=False;"
+      Jwt__Issuer: "TaskManager.Api"
+      Jwt__Audience: "TaskManager.Client"
+      Jwt__Key: "taskmanager-super-secret-key-2026-change-me"
+      Jwt__ExpirationMinutes: "60"
+      AdminSeed__Enabled: "true"
+      AdminSeed__Name: "Admin User"
+      AdminSeed__Email: "admin@taskmanager.com"
+      AdminSeed__Password: "Admin@TaskManager2026"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    command: >
+      sh -c "dotnet restore &&
+             dotnet tool restore &&
+             dotnet ef database update --project TaskManager.Infrastructure --startup-project TaskManager.API"
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: TaskManager.API/Dockerfile
+    container_name: taskmanager.api
+    environment:
+      ASPNETCORE_URLS: "http://+:8080"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=TaskManagerDb;User Id=sa;Password=TaskManager@123;TrustServerCertificate=True;Encrypt=False;"
+      Jwt__Issuer: "TaskManager.Api"
+      Jwt__Audience: "TaskManager.Client"
+      Jwt__Key: "taskmanager-super-secret-key-2026-change-me"
+      Jwt__ExpirationMinutes: "60"
+      AdminSeed__Enabled: "true"
+      AdminSeed__Name: "Admin User"
+      AdminSeed__Email: "admin@taskmanager.com"
+      AdminSeed__Password: "Admin@TaskManager2026"
+    ports:
+      - "8080:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
