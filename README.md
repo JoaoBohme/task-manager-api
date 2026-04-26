@@ -36,7 +36,7 @@ TaskManager/
 
 ## Status atual
 
-Etapas 1, 2, 3, 4, 5, 6, 7 e 8 concluidas:
+Etapas 1, 2, 3, 4, 5, 6, 7, 8 e 9 concluidas:
 
 - solution criada
 - projetos separados por camada
@@ -58,6 +58,8 @@ Etapas 1, 2, 3, 4, 5, 6, 7 e 8 concluidas:
 - middleware global de erros com resposta padronizada implementado
 - Swagger/OpenAPI configurado com exemplos basicos para os DTOs principais
 - testes unitarios adicionados para a camada de servicos
+- autenticacao JWT e endpoint de login implementados
+- todos os endpoints da API protegidos com JWT, exceto o login
 
 ## Como executar
 
@@ -73,8 +75,14 @@ Swagger:
 http://localhost:5064/swagger
 ```
 
+Login:
+
+```text
+POST /api/auth/login
+```
+
 ## Proximas etapas
 
 - migrations e ajuste final da execucao local
-- autenticacao e demais diferenciais
 - refinamentos de banco, logs e empacotamento
+- README final, Docker Compose, Serilog e cache

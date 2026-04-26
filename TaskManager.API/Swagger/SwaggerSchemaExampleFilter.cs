@@ -1,6 +1,7 @@
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using TaskManager.Application.DTOs.Auth;
 using TaskManager.Application.DTOs.Tasks;
 using TaskManager.Application.DTOs.Users;
 
@@ -48,6 +49,15 @@ public class SwaggerSchemaExampleFilter : ISchemaFilter
                 ["description"] = new OpenApiString("Executar validacoes finais e ajustar documentacao."),
                 ["status"] = new OpenApiString("InProgress"),
                 ["priority"] = new OpenApiString("High")
+            };
+        }
+
+        if (context.Type == typeof(LoginDto))
+        {
+            schema.Example = new OpenApiObject
+            {
+                ["email"] = new OpenApiString("joao@taskmanager.com"),
+                ["password"] = new OpenApiString("SenhaForte123")
             };
         }
     }

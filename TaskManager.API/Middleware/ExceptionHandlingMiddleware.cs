@@ -51,6 +51,10 @@ public class ExceptionHandlingMiddleware
                 StatusCodes.Status409Conflict,
                 conflictException.Message,
                 null),
+            UnauthorizedException unauthorizedException => (
+                StatusCodes.Status401Unauthorized,
+                unauthorizedException.Message,
+                null),
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "Ocorreu um erro interno ao processar a requisicao.",

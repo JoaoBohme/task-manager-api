@@ -34,7 +34,7 @@ public class TaskServiceTests
         Assert.Equal(DomainTaskStatus.Pending, result.Status);
         Assert.Equal(request.UserId, result.UserId);
         Assert.NotEqual(Guid.Empty, result.Id);
-        Assert.NotNull(result.DateCreated);
+        Assert.NotEqual(default, result.DateCreated);
     }
 
     [Fact]
