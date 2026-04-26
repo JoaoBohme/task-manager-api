@@ -37,5 +37,11 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
 
         builder.Property(task => task.UserId)
             .IsRequired();
+
+        builder.HasIndex(task => new { task.UserId, task.Status })
+            .HasDatabaseName("IX_Tasks_UserId_Status");
+
+        builder.HasIndex(task => new { task.Status, task.Priority, task.DateCreated })
+            .HasDatabaseName("IX_Tasks_Status_Priority_DateCreated");
     }
 }

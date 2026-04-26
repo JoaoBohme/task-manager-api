@@ -36,7 +36,7 @@ TaskManager/
 
 ## Status atual
 
-Etapas 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 e 12 concluidas:
+Etapas 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 e 14 concluidas:
 
 - solution criada
 - projetos separados por camada
@@ -64,6 +64,9 @@ Etapas 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 e 12 concluidas:
 - seed automatico e idempotente de usuario admin para facilitar avaliacao
 - logs estruturados com Serilog configurados para a API
 - cache em memoria nas listagens de tarefas e usuarios com invalidacao em escrita
+- indices adicionais em tarefas para filtros, resumo e ordenacao das consultas
+- volume nomeado no Docker Compose para persistencia do banco SQL Server
+- CQRS com MediatR aplicado nos endpoints da API via commands e queries
 
 ## Como executar
 
@@ -110,5 +113,5 @@ senha: Admin@TaskManager2026
 
 ## Proximas etapas
 
-- refinamentos finais de banco e empacotamento
 - README final de entrega
+- diagramas de apoio

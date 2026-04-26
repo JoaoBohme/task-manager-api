@@ -1,8 +1,14 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.Common.Models;
 using TaskManager.Application.DTOs.Tasks;
-using TaskManager.Application.Interfaces.Services;
+using TaskManager.Application.Features.Tasks.Commands.CreateTask;
+using TaskManager.Application.Features.Tasks.Commands.DeleteTask;
+using TaskManager.Application.Features.Tasks.Commands.UpdateTask;
+using TaskManager.Application.Features.Tasks.Queries.GetTaskById;
+using TaskManager.Application.Features.Tasks.Queries.GetTasks;
+using TaskManager.Application.Features.Tasks.Queries.GetTaskSummaryByUserId;
 
 namespace TaskManager.API.Controllers;
 
@@ -11,11 +17,11 @@ namespace TaskManager.API.Controllers;
 [Authorize]
 public class TasksController : ControllerBase
 {
-    private readonly ITaskService _taskService;
+    private readonly IMediator _mediator;
 
-    public TasksController(ITaskService taskService)
+    public TasksController(IMediator mediator)
     {
-        _taskService = taskService;
+        _mediator = mediator;
     }
 
     [HttpGet]
@@ -25,7 +31,7 @@ public class TasksController : ControllerBase
         [FromQuery] TaskListQueryDto query,
         CancellationToken cancellationToken)
     {
-        var tasks = await _taskService.GetPagedAsync(query, cancellationToken);
+        var tasks = await _mediator.Send(new GetTasksQuery(query), cancellationToken);
         return Ok(tasks);
     }
 
@@ -34,7 +40,7 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var task = await _taskService.GetByIdAsync(id, cancellationToken);
+        var task = await _mediator.Send(new GetTaskByIdQuery(id), cancellationToken);
         return Ok(task);
     }
 
@@ -43,7 +49,7 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetSummaryByUserId(Guid userId, CancellationToken cancellationToken)
     {
-        var summary = await _taskService.GetSummaryByUserIdAsync(userId, cancellationToken);
+        var summary = await _mediator.Send(new GetTaskSummaryByUserIdQuery(userId), cancellationToken);
         return Ok(summary);
     }
 
@@ -55,7 +61,7 @@ public class TasksController : ControllerBase
         [FromBody] CreateTaskDto request,
         CancellationToken cancellationToken)
     {
-        var task = await _taskService.CreateAsync(request, cancellationToken);
+        var task = await _mediator.Send(new CreateTaskCommand(request), cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = task.Id }, task);
     }
 
@@ -68,7 +74,7 @@ public class TasksController : ControllerBase
         [FromBody] UpdateTaskDto request,
         CancellationToken cancellationToken)
     {
-        var task = await _taskService.UpdateAsync(id, request, cancellationToken);
+        var task = await _mediator.Send(new UpdateTaskCommand(id, request), cancellationToken);
         return Ok(task);
     }
 
@@ -77,7 +83,7 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _taskService.DeleteAsync(id, cancellationToken);
+        await _mediator.Send(new DeleteTaskCommand(id), cancellationToken);
         return NoContent();
     }
 }

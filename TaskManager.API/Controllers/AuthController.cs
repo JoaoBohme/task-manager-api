@@ -1,7 +1,8 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.DTOs.Auth;
-using TaskManager.Application.Interfaces.Services;
+using TaskManager.Application.Features.Auth.Commands.Login;
 
 namespace TaskManager.API.Controllers;
 
@@ -10,11 +11,11 @@ namespace TaskManager.API.Controllers;
 [AllowAnonymous]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly IMediator _mediator;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IMediator mediator)
     {
-        _authService = authService;
+        _mediator = mediator;
     }
 
     [HttpPost("login")]
@@ -23,7 +24,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login([FromBody] LoginDto request, CancellationToken cancellationToken)
     {
-        var response = await _authService.LoginAsync(request, cancellationToken);
+        var response = await _mediator.Send(new LoginCommand(request), cancellationToken);
         return Ok(response);
     }
 }

@@ -61,6 +61,12 @@ namespace TaskManager.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
+                    b.HasIndex("Status", "Priority", "DateCreated")
+                        .HasDatabaseName("IX_Tasks_Status_Priority_DateCreated");
+
+                    b.HasIndex("UserId", "Status")
+                        .HasDatabaseName("IX_Tasks_UserId_Status");
+
                     b.ToTable("Tasks", (string)null);
                 });
 

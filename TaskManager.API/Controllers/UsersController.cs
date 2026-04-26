@@ -1,7 +1,12 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.DTOs.Users;
-using TaskManager.Application.Interfaces.Services;
+using TaskManager.Application.Features.Users.Commands.CreateUser;
+using TaskManager.Application.Features.Users.Commands.DeleteUser;
+using TaskManager.Application.Features.Users.Commands.UpdateUser;
+using TaskManager.Application.Features.Users.Queries.GetAllUsers;
+using TaskManager.Application.Features.Users.Queries.GetUserById;
 
 namespace TaskManager.API.Controllers;
 
@@ -10,18 +15,18 @@ namespace TaskManager.API.Controllers;
 [Authorize]
 public class UsersController : ControllerBase
 {
-    private readonly IUserService _userService;
+    private readonly IMediator _mediator;
 
-    public UsersController(IUserService userService)
+    public UsersController(IMediator mediator)
     {
-        _userService = userService;
+        _mediator = mediator;
     }
 
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyCollection<UserResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var users = await _userService.GetAllAsync(cancellationToken);
+        var users = await _mediator.Send(new GetAllUsersQuery(), cancellationToken);
         return Ok(users);
     }
 
@@ -30,7 +35,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var user = await _userService.GetByIdAsync(id, cancellationToken);
+        var user = await _mediator.Send(new GetUserByIdQuery(id), cancellationToken);
         return Ok(user);
     }
 
@@ -42,7 +47,7 @@ public class UsersController : ControllerBase
         [FromBody] CreateUserDto request,
         CancellationToken cancellationToken)
     {
-        var user = await _userService.CreateAsync(request, cancellationToken);
+        var user = await _mediator.Send(new CreateUserCommand(request), cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
     }
 
@@ -56,7 +61,7 @@ public class UsersController : ControllerBase
         [FromBody] UpdateUserDto request,
         CancellationToken cancellationToken)
     {
-        var user = await _userService.UpdateAsync(id, request, cancellationToken);
+        var user = await _mediator.Send(new UpdateUserCommand(id, request), cancellationToken);
         return Ok(user);
     }
 
@@ -65,7 +70,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _userService.DeleteAsync(id, cancellationToken);
+        await _mediator.Send(new DeleteUserCommand(id), cancellationToken);
         return NoContent();
     }
 }
