@@ -44,6 +44,7 @@ senha: Admin@TaskManager2026
 - [Visao geral](#visao-geral)
 - [Funcionalidades implementadas](#funcionalidades-implementadas)
 - [Arquitetura](#arquitetura)
+- [Diagramas](#diagramas)
 - [Tecnologias utilizadas](#tecnologias-utilizadas)
 - [Pre-requisitos](#pre-requisitos)
 - [Opcao 1 - Execucao recomendada com Docker](#opcao-1---execucao-recomendada-com-docker)
@@ -138,6 +139,105 @@ O projeto segue arquitetura em camadas:
 Fluxo principal:
 
 `Controller -> MediatR -> Handler -> Service -> Repository -> DbContext`
+
+## 🗺️ Diagramas
+
+### Diagrama de arquitetura
+
+```mermaid
+flowchart LR
+    Client["Cliente / Swagger / Consumer"]
+
+    subgraph API["TaskManager.API"]
+        Controllers["Controllers"]
+        Middleware["Exception Middleware"]
+        Swagger["Swagger / JWT"]
+    end
+
+    subgraph Application["TaskManager.Application"]
+        Mediator["MediatR"]
+        Handlers["Commands / Queries / Handlers"]
+        Services["Services"]
+        Validators["FluentValidation"]
+    end
+
+    subgraph Domain["TaskManager.Domain"]
+        Entities["Entities"]
+        Enums["Enums"]
+    end
+
+    subgraph Infrastructure["TaskManager.Infrastructure"]
+        Repositories["Repositories"]
+        DbContext["ApplicationDbContext"]
+        Security["JWT / Seed / Config"]
+    end
+
+    Database[("SQL Server")]
+
+    Client --> Controllers
+    Swagger --> Controllers
+    Controllers --> Middleware
+    Controllers --> Mediator
+    Mediator --> Handlers
+    Handlers --> Validators
+    Handlers --> Services
+    Services --> Repositories
+    Services --> Entities
+    Services --> Enums
+    Repositories --> DbContext
+    Security --> DbContext
+    DbContext --> Database
+```
+
+### MER
+
+```mermaid
+erDiagram
+    USERS ||--o{ TASKS : "possui"
+
+    USERS {
+        uniqueidentifier Id PK
+        nvarchar Name
+        nvarchar Email UK
+        nvarchar PasswordHash
+    }
+
+    TASKS {
+        uniqueidentifier Id PK
+        nvarchar Title
+        nvarchar Description
+        nvarchar Status
+        nvarchar Priority
+        datetime2 DateCreated
+        datetime2 DateCompleted
+        uniqueidentifier UserId FK
+    }
+```
+
+### Fluxo resumido de uma requisicao
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente
+    participant API as Controller
+    participant M as MediatR
+    participant H as Handler
+    participant S as Service
+    participant R as Repository
+    participant DB as SQL Server
+
+    C->>API: HTTP Request
+    API->>M: Command / Query
+    M->>H: Dispatch
+    H->>S: Executa caso de uso
+    S->>R: Leitura / Escrita
+    R->>DB: Query / SaveChanges
+    DB-->>R: Resultado
+    R-->>S: Entidades / dados
+    S-->>H: DTO / resultado
+    H-->>API: Response model
+    API-->>C: HTTP Response
+```
 
 ## 🛠️ Tecnologias utilizadas
 
