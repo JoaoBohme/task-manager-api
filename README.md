@@ -1,86 +1,26 @@
 # TaskManager
 
-API REST para gerenciamento de tarefas desenvolvida em .NET 8, estruturada em camadas para atender ao teste tecnico de perfil Pleno/Senior.
+API REST para gerenciamento de tarefas desenvolvida em .NET 8 como entrega de teste tecnico para vaga de perfil Pleno/Senior.
 
-## Objetivo
+O projeto foi construido com foco em:
 
-Construir uma API com:
+- arquitetura em camadas
+- separacao de responsabilidades
+- boas praticas de API REST
+- persistencia com Entity Framework Core
+- facilidade de execucao para avaliacao local ou via Docker
 
-- CRUD de usuarios
-- CRUD de tarefas
-- filtro e paginacao
-- resumo por status
-- base preparada para autenticacao, testes e evolucoes incrementais
+## 🚀 Inicio rapido
 
-## Stack
+Se voce quiser avaliar o projeto no caminho mais simples:
 
-- .NET 8
-- ASP.NET Core Web API
-- Entity Framework Core
-- SQL Server
-- xUnit
+1. subir com Docker
+2. abrir o Swagger
+3. fazer login com o usuario admin seed
+4. autorizar o token
+5. testar os endpoints
 
-## Estrutura da solucao
-
-```text
-TaskManager/
-|- TaskManager.API/            # Controllers, Program.cs e configuracoes da API
-|- TaskManager.Application/    # Casos de uso, DTOs, interfaces e validacoes
-|- TaskManager.Domain/         # Entidades e regras centrais do dominio
-|- TaskManager.Infrastructure/ # Persistencia, DbContext e repositorios
-|- TaskManager.Tests/          # Testes automatizados
-|- TaskManager.sln
-|- global.json
-|- README.md
-```
-
-## Status atual
-
-Etapas 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 e 14 concluidas:
-
-- solution criada
-- projetos separados por camada
-- referencias entre projetos configuradas
-- bootstrap inicial da API preparado para evolucao
-- entidades e enums do dominio modelados
-- contratos base da camada Application definidos
-- DTOs iniciais, filtros e modelos de paginacao adicionados
-- DbContext, configuracoes EF Core e repositorios implementados
-- infraestrutura registrada via Dependency Injection
-- base pronta para migrations e camada de servicos
-- servicos de usuarios e tarefas implementados
-- validacoes com FluentValidation adicionadas
-- regra de hash de senha e tratamento de conflitos/not found preparados
-- controllers base de usuarios e tarefas implementados
-- API pronta para expor o CRUD principal
-- listagem de tarefas com filtros e paginacao exposta via API
-- endpoint de resumo por status do usuario adicionado
-- middleware global de erros com resposta padronizada implementado
-- Swagger/OpenAPI configurado com exemplos basicos para os DTOs principais
-- testes unitarios adicionados para a camada de servicos
-- autenticacao JWT e endpoint de login implementados
-- todos os endpoints da API protegidos com JWT, exceto o login
-- Docker Compose configurado para API, banco SQL Server e migration
-- seed automatico e idempotente de usuario admin para facilitar avaliacao
-- logs estruturados com Serilog configurados para a API
-- cache em memoria nas listagens de tarefas e usuarios com invalidacao em escrita
-- indices adicionais em tarefas para filtros, resumo e ordenacao das consultas
-- volume nomeado no Docker Compose para persistencia do banco SQL Server
-- CQRS com MediatR aplicado nos endpoints da API via commands e queries
-
-## Como executar
-
-Ambiente local:
-
-```bash
-dotnet restore
-dotnet build
-dotnet tool restore
-dotnet ef database update --project TaskManager.Infrastructure --startup-project TaskManager.API
-dotnet run --project TaskManager.API
-```
-
-Com Docker Compose:
+Comandos:
 
 ```bash
 docker compose up --build
@@ -89,29 +29,597 @@ docker compose up --build
 Swagger:
 
 ```text
-http://localhost:5064/swagger
-```
-
-Com Docker:
-
-```text
 http://localhost:8080/swagger
 ```
 
-Login:
-
-```text
-POST /api/auth/login
-```
-
-Usuario admin de seed:
+Login padrao:
 
 ```text
 email: admin@taskmanager.com
 senha: Admin@TaskManager2026
 ```
 
-## Proximas etapas
+## Sumario
 
-- README final de entrega
-- diagramas de apoio
+- [Visao geral](#visao-geral)
+- [Funcionalidades implementadas](#funcionalidades-implementadas)
+- [Arquitetura](#arquitetura)
+- [Tecnologias utilizadas](#tecnologias-utilizadas)
+- [Pre-requisitos](#pre-requisitos)
+- [Opcao 1 - Execucao recomendada com Docker](#opcao-1---execucao-recomendada-com-docker)
+- [Opcao 2 - Execucao local sem Docker](#opcao-2---execucao-local-sem-docker)
+- [Como validar a API](#como-validar-a-api)
+- [Autenticacao](#autenticacao)
+- [Endpoints principais](#endpoints-principais)
+- [Estrutura da solucao](#estrutura-da-solucao)
+- [Decisoes tecnicas e diferenciais](#decisoes-tecnicas-e-diferenciais)
+- [Testes automatizados](#testes-automatizados)
+- [Troubleshooting](#troubleshooting)
+
+## 📌 Visao geral
+
+Cada tarefa possui:
+
+- `Id`
+- `Title`
+- `Description`
+- `Status` (`Pending`, `InProgress`, `Completed`)
+- `Priority` (`Low`, `Medium`, `High`)
+- `DateCreated`
+- `DateCompleted`
+- `UserId`
+
+Cada usuario possui:
+
+- `Id`
+- `Name`
+- `Email`
+- `PasswordHash`
+
+Relacionamento:
+
+- `1 usuario -> N tarefas`
+
+## ✅ Funcionalidades implementadas
+
+### Obrigatorias
+
+- CRUD completo de usuarios
+- CRUD completo de tarefas
+- relacao `1:N` entre usuarios e tarefas
+- listagem de tarefas com filtros por status, prioridade e usuario
+- paginacao na listagem de tarefas
+- resumo de tarefas por status para um usuario
+- validacao com FluentValidation
+- middleware global de tratamento de erros
+- Swagger/OpenAPI configurado
+- Entity Framework Core com Code First e Migrations
+
+### Diferenciais implementados
+
+- autenticacao JWT com endpoint de login
+- testes unitarios com xUnit na camada de servicos
+- CQRS com MediatR
+- Docker Compose com API + SQL Server + migrator
+- logs estruturados com Serilog
+- cache em memoria com IMemoryCache nas listagens
+- seed automatico de usuario admin para facilitar a avaliacao
+- indices extras para as consultas mais usadas
+
+## 🧱 Arquitetura
+
+O projeto segue arquitetura em camadas:
+
+- `TaskManager.API`
+  - controllers
+  - middleware
+  - configuracao da aplicacao
+  - Swagger
+- `TaskManager.Application`
+  - services
+  - DTOs
+  - validators
+  - commands e queries com MediatR
+  - interfaces
+- `TaskManager.Domain`
+  - entidades
+  - enums
+  - regras centrais do dominio
+- `TaskManager.Infrastructure`
+  - DbContext
+  - configuracoes do EF Core
+  - repositorios
+  - migrations
+  - autenticacao JWT
+  - seed inicial
+- `TaskManager.Tests`
+  - testes unitarios da camada de aplicacao
+
+Fluxo principal:
+
+`Controller -> MediatR -> Handler -> Service -> Repository -> DbContext`
+
+## 🛠️ Tecnologias utilizadas
+
+- .NET 8
+- ASP.NET Core Web API
+- Entity Framework Core 8
+- SQL Server / LocalDB
+- FluentValidation
+- MediatR
+- Serilog
+- xUnit
+- Docker / Docker Compose
+
+## 📦 Pre-requisitos
+
+Existem dois caminhos para executar a aplicacao.
+
+### Caminho recomendado
+
+Use **Docker Compose**. Esse e o caminho mais facil para avaliacao porque sobe:
+
+- SQL Server
+- migracao do banco
+- API
+
+### Caminho alternativo
+
+Use execucao local com:
+
+- .NET SDK 8.0.420
+- SQL Server Express LocalDB
+
+### Downloads oficiais
+
+Se voce nao tiver as dependencias instaladas, use os links oficiais abaixo:
+
+- Git: https://git-scm.com/downloads
+- .NET 8 SDK: https://dotnet.microsoft.com/en-us/download/dotnet/8.0
+- Guia oficial de instalacao do .NET: https://learn.microsoft.com/en-us/dotnet/core/install/
+- Guia oficial de instalacao do .NET no Windows: https://learn.microsoft.com/en-us/dotnet/core/install/windows
+- Guia oficial de instalacao do .NET no macOS: https://learn.microsoft.com/en-us/dotnet/core/install/macos
+- Guia oficial de instalacao do .NET no Linux: https://learn.microsoft.com/en-us/dotnet/core/install/linux
+- Docker Desktop geral: https://docs.docker.com/get-started/introduction/get-docker-desktop/
+- Docker Desktop para Windows: https://docs.docker.com/desktop/setup/install/windows-install/
+- Docker Desktop para macOS: https://docs.docker.com/installation/mac/
+- Docker Engine no Linux: https://docs.docker.com/engine/installation/
+- Docker Desktop no Linux: https://docs.docker.com/desktop/setup/install/linux/
+- SQL Server 2022 Express: https://www.microsoft.com/en-us/download/details.aspx?id=104781&lc=1033&msockid=392adff1f80564130ef1c958f97065fc
+- Documentacao do SQL Server Express LocalDB: https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb?view=sql-server-ver17
+- SQL Server no Linux: https://learn.microsoft.com/en-us/sql/linux/sql-server-linux-setup
+- SQL Server Management Studio (opcional): https://learn.microsoft.com/en-us/ssms/download-sql-server-management-studio-ssms
+
+## 🐳 Opcao 1 - Execucao recomendada com Docker
+
+Esta e a opcao recomendada para **Windows, Linux e macOS**.
+
+### 1. Clonar o repositorio
+
+```bash
+git clone <URL_DO_REPOSITORIO>
+cd task-manager-api
+```
+
+### 2. Garantir que o Docker Desktop esta rodando
+
+No Windows, abra o Docker Desktop e espere o status ficar como iniciado.
+
+Se quiser validar:
+
+```bash
+docker version
+docker info
+```
+
+### 3. Subir a stack
+
+```bash
+docker compose up --build
+```
+
+Esse comando faz:
+
+- sobe o SQL Server em container
+- aguarda o banco ficar saudavel
+- executa as migrations
+- sobe a API
+
+### 4. Abrir o Swagger
+
+```text
+http://localhost:8080/swagger
+```
+
+### 5. Parar a stack
+
+```bash
+docker compose down
+```
+
+### 6. Resetar completamente o ambiente Docker
+
+Se quiser apagar tambem o banco persistido no volume:
+
+```bash
+docker compose down -v
+```
+
+> Observacao: o Compose usa volume nomeado para o SQL Server. Isso significa que o banco nao e perdido em um `docker compose down` comum.
+
+## 💻 Opcao 2 - Execucao local sem Docker
+
+Esta opcao e util para quem prefere rodar a API diretamente com `dotnet run`.
+
+O projeto sempre precisa de:
+
+- .NET SDK 8
+- uma instancia SQL Server acessivel
+
+O que muda por sistema operacional e a forma mais pratica de obter esse SQL Server.
+
+### Windows
+
+No Windows, o caminho mais simples sem Docker e usar `MSSQLLocalDB`, que ja esta configurado no `appsettings.json` padrao.
+
+### 1. Instalar o .NET SDK correto
+
+O projeto esta fixado em:
+
+```json
+{
+  "sdk": {
+    "version": "8.0.420"
+  }
+}
+```
+
+Arquivo: [global.json](</c:/Users/55119/Documents/BOHME solucoes/task-manager-api/global.json:1>)
+
+### 2. Instalar SQL Server Express LocalDB
+
+Se o LocalDB ainda nao existir, instale o SQL Server Express / LocalDB pelos links oficiais acima.
+
+Para verificar se o LocalDB esta disponivel:
+
+```bash
+sqllocaldb info
+```
+
+Para iniciar a instancia padrao:
+
+```bash
+sqllocaldb start MSSQLLocalDB
+```
+
+### 3. Restaurar dependencias
+
+```bash
+dotnet restore
+dotnet tool restore
+```
+
+### 4. Aplicar as migrations
+
+```bash
+dotnet ef database update --project TaskManager.Infrastructure --startup-project TaskManager.API
+```
+
+### 5. Executar a API
+
+```bash
+dotnet run --project TaskManager.API
+```
+
+### 6. Abrir o Swagger
+
+```text
+http://localhost:5064/swagger
+```
+
+### macOS e Linux
+
+No macOS e no Linux, `LocalDB` nao existe.
+
+Nesses casos, para rodar **sem Docker**, a API precisa apontar para uma instancia SQL Server acessivel, por exemplo:
+
+- SQL Server em container
+- SQL Server instalado na propria maquina
+- SQL Server remoto na rede
+
+Exemplo de connection string:
+
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=localhost,1433;Database=TaskManagerDb;User Id=sa;Password=TaskManager@123;TrustServerCertificate=True;Encrypt=False;"
+}
+```
+
+Depois de ajustar a connection string, rode:
+
+```bash
+dotnet restore
+dotnet tool restore
+dotnet ef database update --project TaskManager.Infrastructure --startup-project TaskManager.API
+dotnet run --project TaskManager.API
+```
+
+> Observacao: `LocalDB` nao existe em macOS nem em Linux. Nesses sistemas, fora do Docker, e necessario apontar a API para uma instancia SQL Server real.
+
+## 🧪 Como validar a API
+
+### Passo 1 - Fazer login
+
+O projeto cria automaticamente um usuario admin para facilitar a avaliacao.
+
+Credenciais padrao:
+
+```text
+email: admin@taskmanager.com
+senha: Admin@TaskManager2026
+```
+
+No Swagger:
+
+1. abrir `POST /api/Auth/login`
+2. informar email e senha
+3. executar
+4. copiar o `accessToken` retornado
+
+### Passo 2 - Autorizar no Swagger
+
+1. clicar em `Authorize`
+2. informar:
+
+```text
+Bearer SEU_TOKEN
+```
+
+3. confirmar
+
+### Passo 3 - Testar o fluxo principal
+
+Sugestao de ordem:
+
+1. `GET /api/Users`
+2. `POST /api/Users`
+3. `GET /api/Users/{id}`
+4. `POST /api/Tasks`
+5. `GET /api/Tasks`
+6. `GET /api/Tasks/summary/{userId}`
+7. `PUT /api/Tasks/{id}`
+8. `DELETE /api/Tasks/{id}`
+
+## 🔐 Autenticacao
+
+- `POST /api/Auth/login` e anonimo
+- os demais endpoints estao protegidos com JWT
+
+Formato do login:
+
+```json
+{
+  "email": "admin@taskmanager.com",
+  "password": "Admin@TaskManager2026"
+}
+```
+
+Formato esperado de resposta:
+
+```json
+{
+  "accessToken": "jwt-aqui",
+  "expiresAt": "2026-04-26T23:59:59Z"
+}
+```
+
+## 🌐 Endpoints principais
+
+### Auth
+
+- `POST /api/Auth/login`
+
+### Users
+
+- `GET /api/Users`
+- `GET /api/Users/{id}`
+- `POST /api/Users`
+- `PUT /api/Users/{id}`
+- `DELETE /api/Users/{id}`
+
+### Tasks
+
+- `GET /api/Tasks`
+- `GET /api/Tasks/{id}`
+- `GET /api/Tasks/summary/{userId}`
+- `POST /api/Tasks`
+- `PUT /api/Tasks/{id}`
+- `DELETE /api/Tasks/{id}`
+
+### Health
+
+- `GET /api/Health`
+
+> Observacao: neste projeto o endpoint de health tambem esta protegido por JWT.
+
+## 🧾 Exemplos de payload
+
+### Criar usuario
+
+```json
+{
+  "name": "Joao Silva",
+  "email": "joao@taskmanager.com",
+  "password": "SenhaForte123"
+}
+```
+
+### Criar tarefa
+
+```json
+{
+  "title": "Preparar entrega final",
+  "description": "Revisar endpoints e documentacao",
+  "priority": "High",
+  "userId": "GUID_DO_USUARIO"
+}
+```
+
+### Atualizar tarefa
+
+```json
+{
+  "title": "Preparar entrega final",
+  "description": "Revisar endpoints, documentacao e testes",
+  "status": "InProgress",
+  "priority": "High"
+}
+```
+
+### Filtrar tarefas com paginacao
+
+```text
+GET /api/Tasks?pageNumber=1&pageSize=10&status=Pending&priority=High
+```
+
+## 🗂️ Estrutura da solucao
+
+```text
+TaskManager/
+|- TaskManager.API/
+|- TaskManager.Application/
+|- TaskManager.Domain/
+|- TaskManager.Infrastructure/
+|- TaskManager.Tests/
+|- TaskManager.sln
+|- global.json
+|- docker-compose.yml
+|- README.md
+```
+
+## 💡 Decisoes tecnicas e diferenciais
+
+### 1. Entity Framework Core com Code First
+
+As tabelas e relacoes sao definidas a partir do codigo, com migrations versionadas no repositorio.
+
+### 2. Repository Pattern
+
+Os acessos ao banco foram encapsulados em repositorios para manter a Application desacoplada da persistencia.
+
+### 3. FluentValidation
+
+Os DTOs de entrada sao validados antes da execucao das regras de negocio.
+
+### 4. Middleware global de excecoes
+
+Erros sao convertidos para respostas padronizadas e registradas em log.
+
+### 5. JWT
+
+Foi implementado login com emissao de token para proteger os endpoints da API.
+
+### 6. CQRS com MediatR
+
+Foi aplicado CQRS de forma evolutiva:
+
+- controllers enviam `commands` e `queries`
+- handlers encapsulam cada caso de uso
+- services existentes foram preservados como camada de negocio
+
+### 7. Serilog
+
+Logs estruturados ajudam na observabilidade e facilitam diagnostico local e em Docker.
+
+### 8. IMemoryCache
+
+As listagens de usuarios e tarefas usam cache em memoria com invalidacao quando ha escrita.
+
+### 9. Seed de admin
+
+Foi criado um seed automatico e idempotente para reduzir atrito na avaliacao.
+
+### 10. Refinos de banco
+
+Foram adicionados indices extras nas tarefas para melhorar consultas de filtro, resumo e ordenacao.
+
+## 🧪 Testes automatizados
+
+Para executar os testes:
+
+```bash
+dotnet test TaskManager.sln
+```
+
+Atualmente o projeto possui **28 testes unitarios aprovados**, focados na camada de servicos.
+
+Os cenarios cobertos incluem:
+
+- autenticacao com sucesso e falha
+- criacao, leitura, atualizacao e exclusao de usuarios
+- criacao, leitura, atualizacao e exclusao de tarefas
+- conflitos de email
+- regras de status e conclusao
+- listagens com cache e invalidacao
+- filtros e paginacao de tarefas
+- resumo de tarefas por status
+
+## 🩹 Troubleshooting
+
+### 1. `dockerDesktopLinuxEngine` nao encontrado
+
+O Docker Desktop provavelmente nao esta rodando.
+
+Solucao:
+
+1. abrir o Docker Desktop
+2. esperar iniciar completamente
+3. rodar novamente:
+
+```bash
+docker compose up --build
+```
+
+### 2. `dotnet-ef` nao encontrado
+
+Rode:
+
+```bash
+dotnet tool restore
+```
+
+### 3. Erro ao conectar no LocalDB
+
+Verifique se a instancia existe:
+
+```bash
+sqllocaldb info
+sqllocaldb start MSSQLLocalDB
+```
+
+### 4. Erro de autenticacao no Swagger
+
+Verifique se:
+
+- o login foi executado com sucesso
+- o token foi copiado corretamente
+- o token foi informado no formato:
+
+```text
+Bearer SEU_TOKEN
+```
+
+### 5. Resetar o ambiente Docker
+
+Se quiser recriar banco e containers do zero:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+## 📎 Observacoes finais
+
+Para avaliacao rapida, recomendo usar a opcao com Docker Compose, tanto em Windows quanto em Linux ou macOS.
+
+Ela exige menos configuracao manual, sobe o banco automaticamente, aplica as migrations e deixa a API pronta para uso via Swagger.

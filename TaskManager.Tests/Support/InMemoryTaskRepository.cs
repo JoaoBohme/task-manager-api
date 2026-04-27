@@ -9,10 +9,18 @@ internal class InMemoryTaskRepository : ITaskRepository
 {
     private readonly List<TaskItem> _tasks = [];
 
+    public int GetPagedCalls { get; private set; }
+    public int GetByIdCalls { get; private set; }
+    public int GetSummaryCalls { get; private set; }
+    public int AddCalls { get; private set; }
+    public int UpdateCalls { get; private set; }
+    public int DeleteCalls { get; private set; }
+
     public Task<IReadOnlyCollection<TaskSummaryItem>> GetSummaryByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default)
     {
+        GetSummaryCalls++;
         IReadOnlyCollection<TaskSummaryItem> summary = _tasks
             .Where(task => task.UserId == userId)
             .GroupBy(task => task.Status)
@@ -29,6 +37,7 @@ internal class InMemoryTaskRepository : ITaskRepository
 
     public Task<TaskItem?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
+        GetByIdCalls++;
         return Task.FromResult(_tasks.FirstOrDefault(task => task.Id == id));
     }
 
@@ -36,6 +45,7 @@ internal class InMemoryTaskRepository : ITaskRepository
         TaskListQueryDto query,
         CancellationToken cancellationToken = default)
     {
+        GetPagedCalls++;
         var filteredTasks = _tasks.AsEnumerable();
 
         if (query.Status.HasValue)
@@ -73,17 +83,20 @@ internal class InMemoryTaskRepository : ITaskRepository
 
     public Task AddAsync(TaskItem taskItem, CancellationToken cancellationToken = default)
     {
+        AddCalls++;
         _tasks.Add(taskItem);
         return Task.CompletedTask;
     }
 
     public Task UpdateAsync(TaskItem taskItem, CancellationToken cancellationToken = default)
     {
+        UpdateCalls++;
         return Task.CompletedTask;
     }
 
     public Task DeleteAsync(TaskItem taskItem, CancellationToken cancellationToken = default)
     {
+        DeleteCalls++;
         _tasks.Remove(taskItem);
         return Task.CompletedTask;
     }
